@@ -1,3 +1,10 @@
+/* 
+run
+node .\src\register-commands.js
+from project root to register commands with the server
+update server id in .env file
+*/
+
 require('dotenv').config();
 const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
 
@@ -20,6 +27,18 @@ const commands = [
                 name: 'assigned',
                 description: 'who is the task assigned to',
                 type: ApplicationCommandOptionType.User,
+                required: true
+            }
+        ]
+    },
+    {
+        name: 'done',
+        description: 'mark a task as done',
+        options: [
+            {
+                name: 'id',
+                description: 'the id of the task',
+                type: ApplicationCommandOptionType.Integer,
                 required: true
             }
         ]
