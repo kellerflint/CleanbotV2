@@ -4,6 +4,10 @@ import { Task } from "./models/task";
 
 // just type `nodemon` in project root to start it
 
+/* on running for the first time you need to create a `data` folder in the `src` folder. 
+So `src/data/tasksData.json`. Then create the tasksData.json and prefsData.json files in the data folder. 
+Each must have a [] in them to start with. */
+
 require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
 
