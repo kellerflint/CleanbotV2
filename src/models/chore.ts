@@ -3,6 +3,6 @@ export interface Chore {
     name: string;
     description: string;
     frequency: string;
-    lastCompleted: Date;
-    assignedTo: string;
+    lastAssigned: Date;
+    defaultAssignedTo: object;
 }

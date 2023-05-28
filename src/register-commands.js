@@ -42,6 +42,48 @@ const commands = [
                 required: true
             }
         ]
+    },
+    {
+        name: 'prefs',
+        description: 'set reminder times',
+        options: [
+            {
+                name: 'day1',
+                description: 'Day to be reminded about tasks (0-6, 0 is Sunday)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+            {
+                name: 'timeday1',
+                description: 'Day to be reminded about tasks (6-22 military time)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+            {
+                name: 'day2',
+                description: 'Day to be reminded about tasks (0-6, 0 is Sunday)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+            {
+                name: 'timeday2',
+                description: 'Day to be reminded about tasks (6-22 military time)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+            {
+                name: 'day3',
+                description: 'Day to be reminded about tasks (0-6, 0 is Sunday)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+            {
+                name: 'timeday3',
+                description: 'Day to be reminded about tasks (6-22 military time)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+        ]
     }
 ];
 
