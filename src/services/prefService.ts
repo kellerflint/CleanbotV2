@@ -46,4 +46,13 @@ export class PrefService {
 
         return prefs;
     }
+
+    listPrefs(): string {
+        const prefs = this.readPrefs();
+        let message = "All Prefs:\n";
+        prefs.forEach((p: Pref) => {
+            message += `${p.user} - ${p.days} - ${p.times}\n`;
+        });
+        return message;
+    }
 }

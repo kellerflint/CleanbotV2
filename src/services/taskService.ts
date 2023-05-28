@@ -4,7 +4,7 @@ const fs = require("fs");
 export class TaskService {
     tasksDataPath = "src/data/tasksData.json";
 
-    createTask(content: string, assignedTo: string): number {
+    createTask(content: string, assignedTo: any): number {
         const task: Task = {
             id: this.findNextId(),
             content: content,
@@ -54,6 +54,15 @@ export class TaskService {
         }
 
         return tasks;
+    }
+
+    listTasks(): string {
+        const tasks = this.readTasks();
+        let message = "All Tasks: \n";
+        tasks.forEach((t: Task) => {
+            message += `Task ${t.id}: ${t.content}\n`;
+        });
+        return message;
     }
 
     findNextId(): number {

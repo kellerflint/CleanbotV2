@@ -44,6 +44,48 @@ const commands = [
         ]
     },
     {
+        name: 'list-chores',
+        description: 'list all chores',
+    },
+    {
+        name: 'list-tasks',
+        description: 'list all tasks',
+    },
+    {
+        name: 'list-prefs',
+        description: 'list all prefs',
+    },
+    {
+        name: 'chore',
+        description: 'create a new chore',
+        options: [
+            {
+                name: 'name',
+                description: 'name the chore',
+                type: ApplicationCommandOptionType.String,
+                required: true
+            },
+            {
+                name: 'description',
+                description: 'describe the chore',
+                type: ApplicationCommandOptionType.String,
+                required: true
+            },
+            {
+                name: 'frequency',
+                description: 'how often does the chore need to be done (in days)',
+                type: ApplicationCommandOptionType.Integer,
+                required: true
+            },
+            {
+                name: 'default-assigned',
+                description: 'who is the chore assigned to by default',
+                type: ApplicationCommandOptionType.User,
+                required: true
+            }
+        ]
+    },
+    {
         name: 'prefs',
         description: 'set reminder times',
         options: [
