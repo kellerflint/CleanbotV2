@@ -31,9 +31,9 @@ const canSendUserReminder = (user: any): boolean => {
   const day = date.getDay();
   const hour = date.getHours();
 
-  console.log(`day: ${day}, hour: ${hour}`)
-
   const userPrefs = prefService.readPrefs().filter((p: any) => p.user === user)[0];
+
+  if (!userPrefs) return false;
 
   for (let i = 0; i < userPrefs.days.length; i++) {
     if (userPrefs.days[i] === day && userPrefs.times[i] === hour) return true;
@@ -61,7 +61,7 @@ const sendReminders = (): void => {
 const createNewTasks = (): void => {
   const date = new Date();
   const chores = choreService.readChores();
-  
+
   chores.forEach((chore: Chore) => {
     const nextDate = new Date(chore.lastAssigned);
     nextDate.setDate(nextDate.getDate() + chore.frequency);
@@ -80,7 +80,7 @@ const runHourlyLoop = () => {
 
 client.on('ready', () => {
   console.log(`${client.user.tag} is onilne`);
-  setInterval(runHourlyLoop, 1000 /* * 60 * 60 */); // send reminders every hour
+  setInterval(runHourlyLoop, 1000 * 60 * 60); // send reminders every hour
 });
 
 client.on('interactionCreate', async (interaction: any) => {

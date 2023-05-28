@@ -1,6 +1,6 @@
 /* 
 run
-node .\src\register-commands.js
+node src/register-commands.js
 from project root to register commands with the server
 update server id in .env file
 */
