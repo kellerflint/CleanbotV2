@@ -10,6 +10,9 @@ import { Chore } from "./models/chore";
 So `src/data/tasksData.json`. Then create the tasksData.json, prefsData.json and choresData.json files in the data folder. 
 Each must have a [] in them to start with. */
 
+// for running on dev https://devdojo.com/ize_cubz/how-to-keep-nodejs-app-running-after-ssh-connection-is-closed. Can do:
+// pm2 start nodemon
+
 require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
 
