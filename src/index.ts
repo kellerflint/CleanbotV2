@@ -1,8 +1,8 @@
-import { TaskService } from "./services/taskService";
-import { PrefService } from "./services/prefService";
-import { ChoreService } from "./services/choreService";
-import { Task } from "./models/task";
-import { Chore } from "./models/chore";
+import { TaskService } from './services/taskService';
+import { PrefService } from './services/prefService';
+import { ChoreService } from './services/choreService';
+import { Task } from './models/task';
+import { Chore } from './models/chore';
 
 // just type `nodemon` in project root to start it
 
@@ -17,11 +17,12 @@ require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
 
 const client = new Client({
-  intents: [IntentsBitField.Flags.Guilds,
+  intents: [
+    IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,
     IntentsBitField.Flags.GuildMessages,
     IntentsBitField.Flags.MessageContent,
-  ]
+  ],
 });
 
 const taskService = new TaskService();
@@ -29,12 +30,13 @@ const prefService = new PrefService();
 const choreService = new ChoreService();
 
 const canSendUserReminder = (user: any): boolean => {
-
   const date = new Date();
   const day = date.getDay();
   const hour = date.getHours();
 
-  const userPrefs = prefService.readPrefs().filter((p: any) => p.user === user)[0];
+  const userPrefs = prefService
+    .readPrefs()
+    .filter((p: any) => p.user === user)[0];
 
   if (!userPrefs) return false;
 
@@ -43,23 +45,28 @@ const canSendUserReminder = (user: any): boolean => {
   }
 
   return false;
-}
+};
 
 const sendReminder = (task: Task): void => {
   const message = `
   <@${task.assignedTo.id}> you have a task to do.
   Task ${task.id}: ${task.content}
   *Use the /done command with id ${task.id} to mark it as complete.*
-  `
+  `;
   client.channels.cache.get(process.env.CHANNEL_ID).send(message);
-}
+};
 
 const sendReminders = (): void => {
   const tasks = taskService.readTasks();
   tasks.forEach((task: Task) => {
-    if (canSendUserReminder(`${task.assignedTo.username}#${task.assignedTo.discriminator}`)) sendReminder(task);
+    if (
+      canSendUserReminder(
+        `${task.assignedTo.username}#${task.assignedTo.discriminator}`
+      )
+    )
+      sendReminder(task);
   });
-}
+};
 
 const createNewTasks = (): void => {
   const date = new Date();
@@ -69,17 +76,20 @@ const createNewTasks = (): void => {
     const nextDate = new Date(chore.lastAssigned);
     nextDate.setDate(nextDate.getDate() + chore.frequency);
     if (nextDate < date) {
-      const taskId = taskService.createTask(`${chore.name}: ${chore.description}`, chore.defaultAssignedTo);
+      const taskId = taskService.createTask(
+        `${chore.name}: ${chore.description}`,
+        chore.defaultAssignedTo
+      );
       chore.lastAssigned = date;
       choreService.updateChore(chore);
     }
   });
-}
+};
 
 const runHourlyLoop = () => {
   sendReminders();
   createNewTasks();
-}
+};
 
 client.on('ready', () => {
   console.log(`${client.user.tag} is onilne`);
@@ -97,8 +107,15 @@ client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName !== 'task') return;
 
-  const taskId = taskService.createTask(interaction.options.getString('content'), interaction.options.getUser('assigned'));
-  await interaction.reply(`Task successfully created\n\nTask ID: ${taskId}\n${interaction.options.getString('content')}\nAssigned to: ${interaction.options.getUser('assigned')}`);
+  const taskId = taskService.createTask(
+    interaction.options.getString('content'),
+    interaction.options.getUser('assigned')
+  );
+  await interaction.reply(
+    `Task successfully created\n\nTask ID: ${taskId}\n${interaction.options.getString(
+      'content'
+    )}\nAssigned to: ${interaction.options.getUser('assigned')}`
+  );
 });
 
 client.on('interactionCreate', async (interaction: any) => {
@@ -107,7 +124,11 @@ client.on('interactionCreate', async (interaction: any) => {
 
   const taskId: number = interaction.options.getInteger('id');
   const status = taskService.removeTask(taskId);
-  await interaction.reply(status ? `Task ${taskId} completed` : `Task ${taskId} not found. Either it never existed or has already been completed.`)
+  await interaction.reply(
+    status
+      ? `Task ${taskId} completed`
+      : `Task ${taskId} not found. Either it never existed or has already been completed.`
+  );
 });
 
 client.on('interactionCreate', async (interaction: any) => {
@@ -137,18 +158,20 @@ client.on('interactionCreate', async (interaction: any) => {
 
   const user = interaction.user.tag;
 
-  const days: number [] = [];
+  const days: number[] = [];
   days.push(interaction.options.getInteger('day1'));
   days.push(interaction.options.getInteger('day2'));
   days.push(interaction.options.getInteger('day3'));
 
-  const hours: number [] = [];
+  const hours: number[] = [];
   hours.push(interaction.options.getInteger('timeday1'));
   hours.push(interaction.options.getInteger('timeday2'));
   hours.push(interaction.options.getInteger('timeday3'));
 
   prefService.upsertPref(user, days, hours);
-  await interaction.reply(`Preferences for ${user} have been updated:\nDays: ${days}\nTimes: ${hours}`);
+  await interaction.reply(
+    `Preferences for ${user} have been updated:\nDays: ${days}\nTimes: ${hours}`
+  );
 });
 
 client.on('interactionCreate', async (interaction: any) => {
@@ -160,19 +183,18 @@ client.on('interactionCreate', async (interaction: any) => {
   const frequency = interaction.options.getInteger('frequency');
   const defaultAssignedTo = interaction.options.getUser('default-assigned');
 
-  const choreId = choreService.createChore(name, description, frequency, defaultAssignedTo);
-  await interaction.reply(`Chore successfully created\n\nChore ID: ${choreId}\nName: ${name}\nDescription: ${description}\nFrequency: ${frequency}\nDefault Assigned To: ${defaultAssignedTo}`);
+  const choreId = choreService.createChore(
+    name,
+    description,
+    frequency,
+    defaultAssignedTo
+  );
+  await interaction.reply(
+    `Chore successfully created\n\nChore ID: ${choreId}\nName: ${name}\nDescription: ${description}\nFrequency: ${frequency}\nDefault Assigned To: ${defaultAssignedTo}`
+  );
 });
 
 client.login(process.env.CLIENT_TOKEN);
-
-
-
-
-
-
-
-
 
 /*
 Listening for messages and replying without slash commands

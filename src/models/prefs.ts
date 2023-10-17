@@ -1,5 +1,5 @@
 export interface Pref {
-    user: string;
-    days: number[];
-    times: number[];
+  user: string;
+  days: number[];
+  times: number[];
 }
