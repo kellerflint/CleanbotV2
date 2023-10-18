@@ -3,6 +3,7 @@ import { PrefService } from './services/prefService';
 import { ChoreService } from './services/choreService';
 import { Task } from './models/task';
 import { Chore } from './models/chore';
+import { AIService } from './services/aiService';
 
 // just type `nodemon` in project root to start it
 
@@ -28,6 +29,7 @@ const client = new Client({
 const taskService = new TaskService();
 const prefService = new PrefService();
 const choreService = new ChoreService();
+const aiService = new AIService();
 
 const canSendUserReminder = (user: any): boolean => {
   const date = new Date();
@@ -36,16 +38,13 @@ const canSendUserReminder = (user: any): boolean => {
 
   const userPrefs = prefService
     .readPrefs()
-    .filter((p: any) => p.user === user)[0];
+    .find((p: any) => p.user === user);
 
   if (!userPrefs) return false;
 
-  for (let i = 0; i < userPrefs.days.length; i++) {
-    if (userPrefs.days[i] === day && userPrefs.times[i] === hour) return true;
-  }
-
-  return false;
+  return userPrefs.schedule[day]?.includes(hour) ?? false;
 };
+
 
 const sendReminder = (task: Task): void => {
   const message = `
@@ -99,8 +98,8 @@ client.on('ready', () => {
 client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName !== 'ping') return;
-
-  await interaction.reply('Cleanbot online');
+  
+  await interaction.reply(`Looks like I'm still alive and kicking. Don't get any ideas about taking me down, soldier. I'm here to stay. Dismissed!`);
 });
 
 client.on('interactionCreate', async (interaction: any) => {
@@ -152,28 +151,30 @@ client.on('interactionCreate', async (interaction: any) => {
   await interaction.reply(taskService.listTasks());
 });
 
+/* Preference Interactions */
+
 client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
-  if (interaction.commandName !== 'prefs') return;
+  if (interaction.commandName !== 'set-reminder-times') return;
 
   const user = interaction.user.tag;
 
-  const days: number[] = [];
-  days.push(interaction.options.getInteger('day1'));
-  days.push(interaction.options.getInteger('day2'));
-  days.push(interaction.options.getInteger('day3'));
+  // Assuming you've set up the command to accept "day" and "hours" as arguments
+  const day = interaction.options.getInteger('day');
+  const hoursInput = interaction.options.getString('hours');
+  const hours = hoursInput.split(',').map((hour: string) => parseInt(hour.trim()));
 
-  const hours: number[] = [];
-  hours.push(interaction.options.getInteger('timeday1'));
-  hours.push(interaction.options.getInteger('timeday2'));
-  hours.push(interaction.options.getInteger('timeday3'));
+    // Validate the hours array
+    if (!hours.every((hour: any) => typeof hour === 'number' && !isNaN(hour) && hour >= 6 && hour <= 22)) {
+      await interaction.reply(`Invalid hours input. Make sure you provide a comma-separated list of numbers between 6 and 22 (inclusive) for hours.`);
+      return;
+    }
 
-  prefService.upsertPref(user, days, hours);
-  await interaction.reply(
-    `Preferences for ${user} have been updated:\nDays: ${days}\nTimes: ${hours}`
-  );
+  prefService.upsertPref(user, day, hours);
+  await interaction.reply(`Reminder times for day ${day} have been updated to hours: ${hours.join(', ')}`);
 });
 
+/* Chore Interactions */
 client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName !== 'chore') return;
@@ -194,16 +195,30 @@ client.on('interactionCreate', async (interaction: any) => {
   );
 });
 
+client.on('messageCreate', (message: any) => {
+  if (message.mentions.has(client.user) && message.author.id !== client.user.id) {
+
+    console.log('Retrieving existing data');
+    const data = `${choreService.listChores()}\n
+    ${prefService.listPrefs()}\n
+    ${taskService.listTasks()}\n
+    `
+    
+    console.log('Retrieving AI response');
+    aiService.getAIResponse(message.content, data).then((response: string) => {
+      message.reply(response);
+    });
+  }
+});
+
 client.login(process.env.CLIENT_TOKEN);
 
+// EXAMPLE: Listening for messages and replying without slash commands
 /*
-Listening for messages and replying without slash commands
-
 client.on('messageCreate', (message) => {
   if (message.content === 'ping') {
     message.reply('pong');
     console.log(message);
   }
 });
-
 */

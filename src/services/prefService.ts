@@ -4,24 +4,20 @@ const fs = require('fs');
 export class PrefService {
   prefsDataPath = 'src/data/prefsData.json';
 
-  upsertPref(user: string, days: number[], times: number[]): void {
-    const pref: Pref = {
-      user: user,
-      days: days,
-      times: times,
-    };
-
-    this.savePref(pref);
-  }
-
-  savePref(pref: Pref): void {
+  upsertPref(user: string, day: number, hours: number[]): void {
     let prefs = this.readPrefs();
+    const existingPref = prefs.find(p => p.user === user);
 
-    if (prefs.length !== 0 && prefs.filter((p: Pref) => p.user === pref.user)) {
-      prefs = prefs.filter((p: Pref) => p.user !== pref.user);
+    if (existingPref) {
+      existingPref.schedule[day] = hours;  // Set the hours for that day directly
+    } else {
+      const newPref: Pref = {
+        user: user,
+        schedule: {}  // Initialize with an empty object
+      };
+      newPref.schedule[day] = hours;
+      prefs.push(newPref);
     }
-
-    prefs.push(pref);
 
     this.writePrefs(prefs);
   }
@@ -47,11 +43,25 @@ export class PrefService {
   }
 
   listPrefs(): string {
+    const daysMap: Record<string, string> = {
+      '0': 'Sunday',
+      '1': 'Monday',
+      '2': 'Tuesday',
+      '3': 'Wednesday',
+      '4': 'Thursday',
+      '5': 'Friday',
+      '6': 'Saturday'
+    };
+
     const prefs = this.readPrefs();
     let message = 'All Prefs:\n';
     prefs.forEach((p: Pref) => {
-      message += `${p.user} - ${p.days} - ${p.times}\n`;
+      const schedule = Object.entries(p.schedule)
+        .map(([day, hours]) => `${daysMap[day]}: ${hours.join(', ')}:00`)
+        .join('\n');
+      message += `${p.user}:\n${schedule}\n\n`;
     });
     return message;
-  }
+}
+
 }

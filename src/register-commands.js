@@ -52,8 +52,8 @@ const commands = [
     description: 'list all tasks',
   },
   {
-    name: 'list-prefs',
-    description: 'list all prefs',
+    name: 'list-reminder-times',
+    description: 'list all reminder times',
   },
   {
     name: 'chore',
@@ -86,43 +86,19 @@ const commands = [
     ],
   },
   {
-    name: 'prefs',
-    description: 'set reminder times',
+    name: 'set-reminder-times',
+    description: 'Set reminder times',
     options: [
       {
-        name: 'day1',
+        name: 'day',
         description: 'Day to be reminded about tasks (0-6, 0 is Sunday)',
         type: ApplicationCommandOptionType.Integer,
         required: true,
       },
       {
-        name: 'timeday1',
-        description: 'Day to be reminded about tasks (6-22 military time)',
-        type: ApplicationCommandOptionType.Integer,
-        required: true,
-      },
-      {
-        name: 'day2',
-        description: 'Day to be reminded about tasks (0-6, 0 is Sunday)',
-        type: ApplicationCommandOptionType.Integer,
-        required: true,
-      },
-      {
-        name: 'timeday2',
-        description: 'Day to be reminded about tasks (6-22 military time)',
-        type: ApplicationCommandOptionType.Integer,
-        required: true,
-      },
-      {
-        name: 'day3',
-        description: 'Day to be reminded about tasks (0-6, 0 is Sunday)',
-        type: ApplicationCommandOptionType.Integer,
-        required: true,
-      },
-      {
-        name: 'timeday3',
-        description: 'Day to be reminded about tasks (6-22 military time)',
-        type: ApplicationCommandOptionType.Integer,
+        name: 'hours',
+        description: 'List of hours to be reminded on the selected day (e.g., "6,8,10" for 6:00 AM, 8:00 AM, and 10:00 AM)',
+        type: ApplicationCommandOptionType.String,
         required: true,
       },
     ],
