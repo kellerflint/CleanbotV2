@@ -9,11 +9,11 @@ export class PrefService {
     const existingPref = prefs.find(p => p.user === user);
 
     if (existingPref) {
-      existingPref.schedule[day] = hours;  // Set the hours for that day directly
+      existingPref.schedule[day] = hours;
     } else {
       const newPref: Pref = {
         user: user,
-        schedule: {}  // Initialize with an empty object
+        schedule: {}
       };
       newPref.schedule[day] = hours;
       prefs.push(newPref);
@@ -57,7 +57,7 @@ export class PrefService {
     let message = 'All Prefs:\n';
     prefs.forEach((p: Pref) => {
       const schedule = Object.entries(p.schedule)
-        .map(([day, hours]) => `${daysMap[day]}: ${hours.join(', ')}:00`)
+        .map(([day, hours]) => `${daysMap[day]}: ${hours.join(', ')}`)
         .join('\n');
       message += `${p.user}:\n${schedule}\n\n`;
     });

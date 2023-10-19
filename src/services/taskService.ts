@@ -60,7 +60,7 @@ export class TaskService {
     const tasks = this.readTasks();
     let message = 'All Tasks: \n';
     tasks.forEach((t: Task) => {
-      message += `Task ${t.id}: ${t.content}\n`;
+      message += `Task ${t.id} (${t.assignedTo.username}): ${t.content}\n`;
     });
     return message;
   }

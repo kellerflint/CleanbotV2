@@ -4,6 +4,7 @@ import { ChoreService } from './services/choreService';
 import { Task } from './models/task';
 import { Chore } from './models/chore';
 import { AIService } from './services/aiService';
+import { Readable } from 'openai/_shims/auto/types';
 
 // just type `nodemon` in project root to start it
 
@@ -30,6 +31,24 @@ const taskService = new TaskService();
 const prefService = new PrefService();
 const choreService = new ChoreService();
 const aiService = new AIService();
+
+
+const sendReplyAsFile = async (interaction: any, content: string) => {
+  const fs = require('fs');
+
+  const writeToFile = (filename: string, data: string) => {
+    return new Promise<void>((resolve, reject) => {
+      fs.writeFile(filename, data, (err: any) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  };
+
+  await writeToFile('./temp.txt', content);
+  await interaction.reply({ files: ['./temp.txt'] });
+  fs.unlinkSync('./temp.txt');
+}
 
 const canSendUserReminder = (user: any): boolean => {
   const date = new Date();
@@ -134,21 +153,40 @@ client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName !== 'list-chores') return;
 
-  await interaction.reply(choreService.listChores());
+  const response = choreService.listChores();
+
+  if (response.length >= 2000) {
+    await sendReplyAsFile(interaction, response);
+  } else {
+    await interaction.reply(response);
+  }
+
 });
 
 client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
-  if (interaction.commandName !== 'list-prefs') return;
+  if (interaction.commandName !== 'list-reminder-times') return;
 
-  await interaction.reply(prefService.listPrefs());
+  const response = prefService.listPrefs();
+
+  if (response.length > 2000) {
+    await sendReplyAsFile(interaction, response);
+  } else {
+    await interaction.reply(response);
+  }
 });
 
 client.on('interactionCreate', async (interaction: any) => {
   if (!interaction.isCommand()) return;
   if (interaction.commandName !== 'list-tasks') return;
 
-  await interaction.reply(taskService.listTasks());
+  const response = taskService.listTasks();
+
+  if (response.length >= 2000) {
+    await sendReplyAsFile(interaction, response);
+  } else {
+    await interaction.reply(response);
+  }
 });
 
 /* Preference Interactions */

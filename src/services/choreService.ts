@@ -80,6 +80,7 @@ export class ChoreService {
     chores.forEach((c: Chore) => {
       message += `${c.id}: ${c.name} - ${c.description} - Frequency: ${c.frequency} days - Last Assigned: ${c.lastAssigned} - Default Assigned To: ${c.defaultAssignedTo.username}\n`;
     });
+    console.log(message)
     return message;
   }
 
